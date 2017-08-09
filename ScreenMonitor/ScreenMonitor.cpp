@@ -8,6 +8,7 @@
 #include "ImageSaver.h"
 #include "ROISelector.h"
 #include "ParsingCMD.h"
+#include "ThreadPool_Simple_Std.h"
 
 #include <vector>
 #include <set>
@@ -26,6 +27,7 @@ using namespace std;
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
 	int nRetCode = 0;
+
 	if (argc < 7)
 	{
 		nRetCode = 1;
