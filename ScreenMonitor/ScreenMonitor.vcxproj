@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{82E26AA0-31F7-4CFC-9433-27E115346A59}</ProjectGuid>
+    <ProjectGuid>{0822884C-C485-4D04-A3D1-3AD4CC6458DF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ScreenMonitor</RootNamespace>
   </PropertyGroup>
@@ -89,13 +89,10 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\lib\Concurrent;C:\boost\boost_1_59_0;C:\opencv\opencv_3_10\build\include;..\lib\SystemService;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\opencv\opencv_3_10\build\x64\vc14\lib;..\Debug;C:\boost\boost_1_59_0\lib64-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SystemService.lib;opencv_world310d.lib;libboost_thread-vc120-mt-gd-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,13 +102,26 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\lib\Concurrent;C:\boost\boost_1_59_0;C:\opencv\opencv_3_10\build\include;..\lib\SystemService;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\opencv\opencv_3_10\build\x64\vc14\lib;..\x64\Debug;C:\boost\boost_1_59_0\lib64-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SystemService.lib;opencv_world310d.lib;libboost_thread-vc120-mt-gd-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\lib;C:\boost\boost_1_59_0;C:\opencv\opencv_3_10\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\opencv\opencv_3_10\build\x64\vc14\lib;C:\boost\boost_1_59_0\lib64-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world310d.lib;libboost_thread-vc120-mt-gd-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,27 +150,48 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\boost\boost_1_59_0;C:\opencv\opencv_3_10\build\include;..\lib\SystemService;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\opencv\opencv_3_10\build\x64\vc14\lib;..\x64\Release;C:\boost\boost_1_59_0\lib64-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SystemService.lib;opencv_world310.lib;libboost_thread-vc120-mt-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\boost\boost_1_59_0;C:\opencv\opencv_3_10\build\include;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>C:\opencv\opencv_3_10\build\x64\vc14\lib;C:\boost\boost_1_59_0\lib64-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world310.lib;libboost_thread-vc120-mt-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CommonData.h" />
-    <ClInclude Include="CroppedImage.h" />
-    <ClInclude Include="FullImage.h" />
+    <ClInclude Include="..\lib\ConditionRingQ_Std.h" />
+    <ClInclude Include="..\lib\ConditionRingQ_Win.h" />
+    <ClInclude Include="..\lib\ParsingCMD.h" />
+    <ClInclude Include="..\lib\ThreadPool_Simple_Std.h" />
+    <ClInclude Include="ChangedImage_DataLine.h" />
+    <ClInclude Include="ImageChecker_Task.h" />
     <ClInclude Include="ImageGreper.h" />
     <ClInclude Include="ImageSaver.h" />
-    <ClInclude Include="ImageSelector.h" />
+    <ClInclude Include="ImageSelector_TaskMaker.h" />
+    <ClInclude Include="Image_DataLine.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ROISelector.h" />
     <ClInclude Include="ScreenMonitor.h" />
@@ -168,12 +199,16 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CommonData.cpp" />
-    <ClCompile Include="CroppedImage.cpp" />
-    <ClCompile Include="FullImage.cpp" />
+    <ClCompile Include="..\lib\ConditionRingQ_Std.cpp" />
+    <ClCompile Include="..\lib\ConditionRingQ_Win.cpp" />
+    <ClCompile Include="..\lib\ParsingCMD.cpp" />
+    <ClCompile Include="..\lib\ThreadPool_Simple_Std.cpp" />
+    <ClCompile Include="ChangedImage_DataLine.cpp" />
+    <ClCompile Include="ImageChecker_Task.cpp" />
     <ClCompile Include="ImageGreper.cpp" />
     <ClCompile Include="ImageSaver.cpp" />
-    <ClCompile Include="ImageSelector.cpp" />
+    <ClCompile Include="ImageSelector_TaskMaker.cpp" />
+    <ClCompile Include="Image_DataLine.cpp" />
     <ClCompile Include="ROISelector.cpp" />
     <ClCompile Include="ScreenMonitor.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -6,28 +6,25 @@
 #include <opencv2/opencv.hpp>
 
 #include <vector>
-
-#include "FullImage.h"
-class ROISelector
+class CROISelector
 {
-public:
-	//IplImage * m_img1;
+private:
 	cv::Mat m_orgFrame, m_selectedFrame, m_midFrame;
 	cv::Point m_point;
 	int m_drag = 0;
 	int m_key = 0;
 	cv::Rect m_rect;
-	std::vector<cv::Rect> m_ROIs;
-	std::vector<int> m_IDs;
 	int m_curID;
+	std::vector<cv::Rect> m_vecROIs;
+	std::vector<int> m_vecIDs;
+	double m_dImageFactor;
 public:
-	ROISelector();
-	~ROISelector();
+	CROISelector();
+	~CROISelector();
 
+	int GetROI(cv::Mat matImage, std::vector<cv::Rect>& vecROIs, std::vector<int>& vecIDs);
+private:
 	static void MouseHandlerProxy(int event, int x, int y, int flags, void* param);
 	void MouseHandler(int event, int x, int y, int flags);
-	int StartGetROI();
-
-	void ImgSelector_Dataline(boost::shared_ptr<FullImage> ptr);
 };
 

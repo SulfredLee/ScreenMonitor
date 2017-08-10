@@ -1,35 +1,35 @@
 #pragma once
-#include <boost/shared_ptr.hpp>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "myThread.h"
-#include "blockingQ.h"
-#include "CroppedImage.h"
-class ImageSaver :
-	public myThread
+#include <string>
+#include <vector>
+
+#include "ChangedImage_DataLine.h"
+struct CImageSaver_Config
 {
-public:
-	enum msgType
-	{
-		IMG_IN
-	};
-	blockingQ<boost::shared_ptr<CroppedImage> > m_imageQ;
-	blockingQ<msgType> m_msgQ;
-	std::string m_outputPath;
-public:
-	ImageSaver();
-	~ImageSaver();
+	// Get from outside
+	std::string strOutputPath;
+	// Generate from inside
 
-	bool Init(const std::string& outputPath);
-	//Override
-	void ThreadMain();
-
-	//Callback
-	void ImageSaver_DataLine(boost::shared_ptr<CroppedImage> ptr);
+	CImageSaver_Config(){}
+	CImageSaver_Config(const std::string& strOutputPathIN) :
+		strOutputPath(strOutputPathIN)
+	{}
+};
+class CImageSaver
+	: public CChangedImage_DataLine
+{
 private:
-	void SaveImg();
+	CImageSaver_Config m_Config;
+public:
+	CImageSaver();
+	~CImageSaver();
+
+	bool InitComponent(CImageSaver_Config&& ConfigIN);
+	// override
+	void SendChangedImageWithTime_ID(cv::Mat matImage, const std::string& strTime, int nID);
+private:
 	std::string ConvertID(const int& ID);
 };
 

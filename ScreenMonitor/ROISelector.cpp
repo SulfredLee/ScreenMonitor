@@ -2,22 +2,23 @@
 #include "ROISelector.h"
 
 
-ROISelector::ROISelector()
+CROISelector::CROISelector()
 {
 	m_curID = 0;
+	m_dImageFactor = 1.5;
 }
 
 
-ROISelector::~ROISelector()
+CROISelector::~CROISelector()
 {
 }
 
-void ROISelector::MouseHandlerProxy(int event, int x, int y, int flags, void* param)
+void CROISelector::MouseHandlerProxy(int event, int x, int y, int flags, void* param)
 {
-	ROISelector* ptr = (ROISelector*)param;
+	CROISelector* ptr = (CROISelector*)param;
 	ptr->MouseHandler(event, x, y, flags);
 }
-void ROISelector::MouseHandler(int event, int x, int y, int flags)
+void CROISelector::MouseHandler(int event, int x, int y, int flags)
 {
 	/* user press left button */
 	if (event == CV_EVENT_LBUTTONDOWN && !m_drag)
@@ -42,13 +43,13 @@ void ROISelector::MouseHandler(int event, int x, int y, int flags)
 		m_selectedFrame.copyTo(m_midFrame);
 		m_drag = 0;
 		//get the original size
-		m_rect.x *= 2;
-		m_rect.y *= 2;
-		m_rect.height *= 2;
-		m_rect.width *= 2;
+		m_rect.x *= m_dImageFactor;
+		m_rect.y *= m_dImageFactor;
+		m_rect.height *= m_dImageFactor;
+		m_rect.width *= m_dImageFactor;
 		//get the original size [end]
-		m_ROIs.push_back(m_rect);
-		m_IDs.push_back(m_curID++);
+		m_vecROIs.push_back(m_rect);
+		m_vecIDs.push_back(m_curID++);
 	}
 
 	/* user click right button: reset all */
@@ -58,32 +59,33 @@ void ROISelector::MouseHandler(int event, int x, int y, int flags)
 	}
 }
 
-int ROISelector::StartGetROI()
+int CROISelector::GetROI(cv::Mat matImage, std::vector<cv::Rect>& vecROIs, std::vector<int>& vecIDs)
 {	
+	int newCol, newRow;
+	newCol = static_cast<int>(matImage.cols / m_dImageFactor);
+	newRow = static_cast<int>(matImage.rows / m_dImageFactor);
+	cv::resize(matImage, m_orgFrame, cv::Size(newCol, newRow));
+	cv::resize(matImage, m_selectedFrame, cv::Size(newCol, newRow));
+	cv::resize(matImage, m_midFrame, cv::Size(newCol, newRow));
+
 	while (m_key != 'q')
 	{
-		cvSetMouseCallback("result", ROISelector::MouseHandlerProxy, this);
+		cvSetMouseCallback("result", CROISelector::MouseHandlerProxy, this);
 		m_key = cvWaitKey(10);
 		if ((char)m_key == 'r')
 		{ 
 			m_rect = cvRect(0, 0, 0, 0); 
 			m_orgFrame.copyTo(m_selectedFrame);
 			m_selectedFrame.copyTo(m_midFrame);
-			m_ROIs.clear();
-			m_IDs.clear();
+			m_vecROIs.clear();
+			m_vecIDs.clear();
 			m_curID = 0;
 		}
 		cv::imshow("result", m_midFrame);
 	}
 	cvDestroyWindow("result");
+	
+	vecROIs = m_vecROIs;
+	vecIDs = m_vecIDs;
 	return 0;
-}
-
-void ROISelector::ImgSelector_Dataline(boost::shared_ptr<FullImage> ptr)
-{
-	int newCol, newRow;
-	newCol = ptr->m_image.cols / 2; newRow = ptr->m_image.rows / 2;
-	cv::resize(ptr->m_image, m_orgFrame, cv::Size(newCol, newRow));
-	cv::resize(ptr->m_image, m_selectedFrame, cv::Size(newCol, newRow));
-	cv::resize(ptr->m_image, m_midFrame, cv::Size(newCol, newRow));
 }

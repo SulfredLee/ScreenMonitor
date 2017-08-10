@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{bcb99c3a-082b-4f1e-993a-6658df9216d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -30,25 +33,37 @@
     <ClInclude Include="ScreenMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CommonData.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\lib\ConditionRingQ_Std.h">
+      <Filter>lib</Filter>
     </ClInclude>
-    <ClInclude Include="CroppedImage.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\lib\ConditionRingQ_Win.h">
+      <Filter>lib</Filter>
     </ClInclude>
-    <ClInclude Include="FullImage.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\lib\ParsingCMD.h">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\ThreadPool_Simple_Std.h">
+      <Filter>lib</Filter>
     </ClInclude>
     <ClInclude Include="ImageGreper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImageSaver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageSelector.h">
+    <ClInclude Include="Image_DataLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ROISelector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSelector_TaskMaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageChecker_Task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangedImage_DataLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSaver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,25 +74,37 @@
     <ClCompile Include="ScreenMonitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommonData.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\lib\ConditionRingQ_Std.cpp">
+      <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="CroppedImage.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\lib\ConditionRingQ_Win.cpp">
+      <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="FullImage.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\lib\ParsingCMD.cpp">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ThreadPool_Simple_Std.cpp">
+      <Filter>lib</Filter>
     </ClCompile>
     <ClCompile Include="ImageGreper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageSaver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageSelector.cpp">
+    <ClCompile Include="Image_DataLine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ROISelector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageSelector_TaskMaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageChecker_Task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangedImage_DataLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageSaver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

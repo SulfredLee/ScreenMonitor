@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "ImageGreper.h"
-#include "ImageSelector.h"
-#include "ROISelector.h"
 
 #include <Windows.h>
 #include <Wincodec.h>             // we use WIC for saving images
@@ -14,26 +12,71 @@
 #define HRCHECK(__expr) {hr=(__expr);if(FAILED(hr)){wprintf(L"FAILURE 0x%08X (%i)\n\tline: %u file: '%s'\n\texpr: '" WIDEN(#__expr) L"'\n",hr, hr, __LINE__,__WFILE__);goto cleanup;}}
 #define RELEASE(__p) {if(__p!=nullptr){__p->Release();__p=nullptr;}}
 
-ImageGreper::ImageGreper()
+CImageGreper::CImageGreper()
 {
+	m_atombThreadRun = false;
 }
 
 
-ImageGreper::~ImageGreper()
+CImageGreper::~CImageGreper()
 {
 }
 
-//Override
-void ImageGreper::ThreadMain()
+void CImageGreper::ThreadMain()
 {
-	while (!myThread::IsEndThread())
+	while (m_atombThreadRun)
 	{
 		HRESULT hr = Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, 1);
-		Sleep(m_iDuration);
+		Sleep(m_Config.nDuration);
 	}
 }
 
-HRESULT ImageGreper::SavePixelsToFile32bppPBGRA(UINT width, UINT height, UINT stride, LPBYTE pixels, LPWSTR filePath, const GUID &format)
+bool CImageGreper::InitComponent(CImageGreper_Config&& ConfigIN)
+{
+	m_Config = std::move(ConfigIN);
+
+	if (m_Config.nNumShot <= 0)
+		return false;
+
+	m_Config.nNumShot > 128 ? 128 : m_Config.nNumShot;
+	m_Config.nDuration = 1000 / m_Config.nNumShot;
+
+	return true;
+}
+
+void CImageGreper::StopThread()
+{
+	m_atombThreadRun = false;
+}
+
+void CImageGreper::StartThread()
+{
+	m_atombThreadRun = true;
+	m_Config.shr_ptrThreadPool->submit(std::bind(&CImageGreper::ThreadMain, this));
+}
+
+bool CImageGreper::IsThreadRun()
+{
+	return m_atombThreadRun;
+}
+
+void CImageGreper::AddObserver(std::shared_ptr<CImage_DataLine> shr_ptrObserver)
+{
+	m_vecObservers.emplace_back(shr_ptrObserver);
+}
+
+cv::Mat CImageGreper::TakeAScreenShot()
+{
+	Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, 1, false);
+	return m_matImageForOneShot;
+}
+
+HRESULT CImageGreper::SavePixelsToFile32bppPBGRA(UINT width,
+	UINT height,
+	UINT stride,
+	LPBYTE pixels,
+	LPWSTR filePath,
+	const GUID &format)
 {
 	if (!filePath || !pixels)
 		return E_INVALIDARG;
@@ -68,7 +111,7 @@ cleanup:
 	return hr;
 }
 
-HRESULT ImageGreper::Direct3D9TakeScreenshots(UINT adapter, UINT count)
+HRESULT CImageGreper::Direct3D9TakeScreenshots(UINT adapter, UINT count, bool bUpdateObservers)
 {
 	HRESULT hr = S_OK;
 	IDirect3D9 *d3d = nullptr;
@@ -112,11 +155,11 @@ HRESULT ImageGreper::Direct3D9TakeScreenshots(UINT adapter, UINT count)
 	char temp[1024];
 	memset(temp, 0, 1024);
 	sprintf_s(temp, "%02d%02d%02d", st.wHour, st.wMinute, st.wSecond);
-	if (m_preTime != temp)
+	if (m_strPreviousTime != temp)
 	{
 		wprintf(L"%i:%i:%i.%i\n", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 	}
-	m_preTime = temp;
+	m_strPreviousTime = temp;
 	memset(temp, 0, 1024);
 	sprintf_s(temp, "%04d%02d%02d_%02d%02d%02d_%04d", st.wYear, st.wMonth, st.wDay,
 		st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
@@ -140,8 +183,15 @@ HRESULT ImageGreper::Direct3D9TakeScreenshots(UINT adapter, UINT count)
 		WCHAR file[100];
 		wsprintf(file, L"cap%i.png", i);
 		//HRCHECK(SavePixelsToFile32bppPBGRA(mode.Width, mode.Height, pitch, shots[i], file, GUID_ContainerFormatPng));
-		std::string timeStamp(temp);
-		ConvertImage(mode.Width, mode.Height, pitch, shots[i], timeStamp);
+		std::string strTimeStamp(temp);
+		if (bUpdateObservers)
+		{
+			UpdateObserver(ConvertImage(mode.Width, mode.Height, pitch, shots[i]), strTimeStamp);
+		}
+		else
+		{
+			ConvertImage(mode.Width, mode.Height, pitch, shots[i]).copyTo(m_matImageForOneShot);
+		}
 	}
 
 cleanup:
@@ -159,38 +209,19 @@ cleanup:
 	return hr;
 }
 
-void ImageGreper::UpdateObserver(boost::shared_ptr<FullImage> ptr)
+void CImageGreper::UpdateObserver(cv::Mat matImage, const std::string& strTime)
 {
-	for (std::set<ImageSelector*>::iterator it = m_observers.begin(); it != m_observers.end(); it++)
+	for (auto it = m_vecObservers.begin(); it != m_vecObservers.end(); it++)
 	{
-		(*it)->ImgSelector_Dataline(ptr);
-	}
-
-	for (std::set<ROISelector*>::iterator it = m_observers_ROI.begin(); it != m_observers_ROI.end(); it++)
-	{
-		(*it)->ImgSelector_Dataline(ptr);
+		(*it)->SendImageWithTime(matImage, strTime);
 	}
 }
 
-void ImageGreper::ConvertImage(const UINT& width, const UINT& height, const UINT& stride, const LPBYTE& pixels, const std::string& timeStamp)
+cv::Mat CImageGreper::ConvertImage(const UINT& unWidth,
+	const UINT& unHeight,
+	const UINT& unStride,
+	const LPBYTE& pbPixels)
 {
-	boost::shared_ptr<FullImage> image(new FullImage);
-	cv::Mat(height, width, CV_8UC4, (unsigned*)pixels).copyTo(image->m_image);
-	image->m_timeStamp = timeStamp;
-	//cv::imwrite("Test.jpg", image->m_image);
-	UpdateObserver(image);
-}
-
-void ImageGreper::Init(const int& numShot,
-	const std::set<ImageSelector*>& observers)
-{
-	if (numShot <= 0)
-		return;
-
-	m_iNumShot = numShot;
-	if (m_iNumShot > 128)
-		m_iNumShot = 128;
-	m_iDuration = 1000 / m_iNumShot;
-
-	m_observers = observers;
+	//cv::imwrite("ConvertImage.jpg", cv::Mat(unHeight, unWidth, CV_8UC4, (unsigned*)pbPixels));
+	return cv::Mat(unHeight, unWidth, CV_8UC4, (unsigned*)pbPixels);
 }
