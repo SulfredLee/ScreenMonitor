@@ -1,7 +1,4 @@
 #pragma once
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 

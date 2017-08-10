@@ -15,50 +15,22 @@ CWinApp theApp;
 
 using namespace std;
 
-//class Foo
-//{
-//public:
-//	Foo();
-//	~Foo();
-//
-//	void PrintFoo()
-//	{
-//		std::cout << "Foo\n";
-//	}
-//private:
-//
-//};
-//
-//Foo::Foo()
-//{
-//}
-//
-//Foo::~Foo()
-//{
-//}
-
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
 	int nRetCode = 0;
 
-
-	//CThreadPool_Simple_Std testPool;
-	//Foo foo;
-	//testPool.submit(std::bind(&Foo::PrintFoo, foo));
-
-	if (argc < 7)
+	if (argc < 5)
 	{
 		nRetCode = 1;
 		std::cout << "Error:\n"
-			<< "Usage: ScreenMonitor.exe -p NumberOfThread -t Threshold(percentage, mask is 3x3) -n photoPerSec\n";
+			<< "Usage: ScreenMonitor.exe -t Threshold(percentage, mask is 3x3) -n photoPerSec\n";
 		return nRetCode;
 	}
 
 	ParsingCMD cmdPar;
-	cmdPar.Set("-p"); cmdPar.Set("-t"); cmdPar.Set("-n");
+	cmdPar.Set("-t"); cmdPar.Set("-n");
 	cmdPar.DoParsing(argc, argv);
 	double dThreshold = std::stod(cmdPar["-t"]); // threshold is percentage
-	int nNumOfThread = std::stoi(cmdPar["-p"]);
 	int nNumOfPhoto = std::stoi(cmdPar["-n"]);
 
 	std::shared_ptr<CThreadPool_Simple_Std> shr_ptrThreadPool(std::make_shared<CThreadPool_Simple_Std>());
