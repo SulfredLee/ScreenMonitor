@@ -184,10 +184,13 @@ HRESULT CImageGreper::Direct3D9TakeScreenshots(UINT adapter, UINT count, bool bU
 		wsprintf(file, L"cap%i.png", i);
 		//HRCHECK(SavePixelsToFile32bppPBGRA(mode.Width, mode.Height, pitch, shots[i], file, GUID_ContainerFormatPng));
 		std::string strTimeStamp(temp);
-		ConvertImage(mode.Width, mode.Height, pitch, shots[i]).copyTo(m_matImageForOneShot);
 		if (bUpdateObservers)
 		{
-			UpdateObserver(m_matImageForOneShot, strTimeStamp);
+			UpdateObserver(ConvertImage(mode.Width, mode.Height, pitch, shots[i]), strTimeStamp);
+		}
+		else
+		{
+			ConvertImage(mode.Width, mode.Height, pitch, shots[i]).copyTo(m_matImageForOneShot);
 		}
 	}
 

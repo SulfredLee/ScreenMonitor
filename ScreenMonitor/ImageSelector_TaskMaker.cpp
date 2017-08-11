@@ -46,11 +46,10 @@ void CImageSelector_TaskMaker::SendImageWithTime(cv::Mat matImage, const std::st
 			m_Config.dThreshold,
 			strTime,
 			m_Config.vecIDs[i],
-			shr_ptrImageChecker,
+			nullptr, //shr_ptrImageChecker,
 			m_vecObservers));
-		shr_ptrImageChecker->StartChecking();
-		//m_Config.shr_ptrThreadPool->submit(
-		//	std::bind(&CImageChecker_Task::StartChecking, *shr_ptrImageChecker));
+		m_Config.shr_ptrThreadPool->submit(
+			std::bind(&CImageChecker_Task::StartChecking, *shr_ptrImageChecker));
 	}
 	matImage.copyTo(m_Config.matPreviousImage);
 }
