@@ -15,7 +15,6 @@ struct CImageChecker_Task_Config
 	double dThreshold;
 	std::string strTime;
 	int nID;
-	std::shared_ptr<CImageChecker_Task> shr_ptrImageChecker_Task;
 	std::vector<std::shared_ptr<CChangedImage_DataLine> > vecObservers;
 	// Generate from inside
 
@@ -25,14 +24,12 @@ struct CImageChecker_Task_Config
 		double dThresholdIN,
 		std::string strTimeIN,
 		int nIDIN,
-		std::shared_ptr<CImageChecker_Task> shr_ptrImageChecker_TaskIN,
 		const std::vector<std::shared_ptr<CChangedImage_DataLine> >& vecObserversIN) :
 		matPreviousImage(matPreviousImageIN),
 		matCurrentImage(matCurrentImageIN),
 		dThreshold(dThresholdIN),
 		strTime(strTimeIN),
 		nID(nIDIN),
-		shr_ptrImageChecker_Task(shr_ptrImageChecker_TaskIN),
 		vecObservers(vecObserversIN)
 	{}
 };
