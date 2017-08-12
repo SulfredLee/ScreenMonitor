@@ -30,7 +30,6 @@ void CImageChecker_Task::StartChecking()
 			(*it)->SendChangedImageWithTime_ID(m_Config.matCurrentImage, m_Config.strTime, m_Config.nID);
 		}
 	}
-	m_Config.shr_ptrImageChecker_Task.reset();
 }
 
 bool CImageChecker_Task::IsImgChanged(const cv::Mat preImg,
