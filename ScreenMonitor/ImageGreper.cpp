@@ -190,6 +190,10 @@ HRESULT CImageGreper::Direct3D9TakeScreenshots(UINT adapter, UINT count, bool bU
 		}
 		else
 		{
+			// We have to copy the Mat to internal memory because this Mat is created from an array.
+			// Mat in this case did not has its own memory.
+			// The content will be deleted when the original array is deleted.
+			// So we have to copy the content to m_matImageForOneShot if we want to use it outside from this function
 			ConvertImage(mode.Width, mode.Height, pitch, shots[i]).copyTo(m_matImageForOneShot);
 		}
 	}
@@ -223,5 +227,8 @@ cv::Mat CImageGreper::ConvertImage(const UINT& unWidth,
 	const LPBYTE& pbPixels)
 {
 	//cv::imwrite("ConvertImage.jpg", cv::Mat(unHeight, unWidth, CV_8UC4, (unsigned*)pbPixels));
+	
+	// opencv will create a Mat without copying from the original array, so when the array is deleted,
+	// this Mat is empty, and user cannot release the memory by releasing the Mat in this case
 	return cv::Mat(unHeight, unWidth, CV_8UC4, (unsigned*)pbPixels);
 }
