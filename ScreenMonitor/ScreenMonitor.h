@@ -3,6 +3,7 @@
 #include "resource.h"
 
 #include "ImageGreper_DirectX9.h"
+#include "ImageGreper_Win32.h"
 #include "ParsingCMD.h"
 #include "ROISelector.h"
 #include "ImageSelector_TaskMaker.h"
