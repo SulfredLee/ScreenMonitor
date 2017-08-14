@@ -72,6 +72,9 @@
     <ClInclude Include="ImageGreper_Win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImageGreper_Win32MultipleScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -117,6 +120,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageGreper_Win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageGreper_Win32MultipleScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

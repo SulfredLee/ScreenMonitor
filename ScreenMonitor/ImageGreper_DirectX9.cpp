@@ -161,8 +161,8 @@ HRESULT CImageGreper_DirectX9::Direct3D9TakeScreenshots(UINT adapter, UINT count
 	// save all screenshots
 	for (UINT i = 0; i < count; i++)
 	{
-		WCHAR file[100];
-		wsprintf(file, L"cap%i.png", i);
+		//WCHAR file[100];
+		//wsprintf(file, L"cap%i.png", i);
 		//HRCHECK(SavePixelsToFile32bppPBGRA(mode.Width, mode.Height, pitch, shots[i], file, GUID_ContainerFormatPng));
 		sprintf_s(temp, "%04d%02d%02d_%02d%02d%02d_%04d", st.wYear, st.wMonth, st.wDay,
 			st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);

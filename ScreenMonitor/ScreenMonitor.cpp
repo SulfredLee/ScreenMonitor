@@ -36,7 +36,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	std::shared_ptr<CThreadPool_Simple_Std> shr_ptrThreadPool(std::make_shared<CThreadPool_Simple_Std>());
 
 	//std::shared_ptr<CImageGreper_DirectX9> ImageGreper(std::make_shared<CImageGreper_DirectX9>());
-	std::shared_ptr<CImageGreper_Win32> ImageGreper(std::make_shared<CImageGreper_Win32>());
+	//std::shared_ptr<CImageGreper_Win32> ImageGreper(std::make_shared<CImageGreper_Win32>());
+	std::shared_ptr<CImageGreper_Win32MultipleScreen> ImageGreper(std::make_shared<CImageGreper_Win32MultipleScreen>());
 	ImageGreper->InitComponent(CImageGreper_Config(nNumOfPhoto));
 	// Select region of interest
 	CROISelector ROISelector;
