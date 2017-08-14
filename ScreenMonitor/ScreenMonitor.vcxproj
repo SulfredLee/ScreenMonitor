@@ -189,6 +189,7 @@
     <ClInclude Include="ChangedImage_DataLine.h" />
     <ClInclude Include="ImageChecker_Task.h" />
     <ClInclude Include="ImageGreper.h" />
+    <ClInclude Include="ImageGreper_DirectX9.h" />
     <ClInclude Include="ImageSaver.h" />
     <ClInclude Include="ImageSelector_TaskMaker.h" />
     <ClInclude Include="Image_DataLine.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="ChangedImage_DataLine.cpp" />
     <ClCompile Include="ImageChecker_Task.cpp" />
     <ClCompile Include="ImageGreper.cpp" />
+    <ClCompile Include="ImageGreper_DirectX9.cpp" />
     <ClCompile Include="ImageSaver.cpp" />
     <ClCompile Include="ImageSelector_TaskMaker.cpp" />
     <ClCompile Include="Image_DataLine.cpp" />

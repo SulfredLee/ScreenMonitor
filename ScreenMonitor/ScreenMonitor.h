@@ -2,7 +2,7 @@
 
 #include "resource.h"
 
-#include "ImageGreper.h"
+#include "ImageGreper_DirectX9.h"
 #include "ParsingCMD.h"
 #include "ROISelector.h"
 #include "ImageSelector_TaskMaker.h"

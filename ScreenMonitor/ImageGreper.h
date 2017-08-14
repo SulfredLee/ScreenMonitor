@@ -6,36 +6,36 @@
 #include <string>
 #include <memory>
 #include <atomic>
+#include <thread>
 
 #include "Image_DataLine.h"
-#include "ThreadPool_Simple_Std.h"
+
 struct CImageGreper_Config
 {
 	// Get from outside
 	int nNumShot;
-	std::shared_ptr<CThreadPool_Simple_Std> shr_ptrThreadPool;
 	// Generate from inside
 	int nDuration;
 
 	CImageGreper_Config()
 	{}
-	CImageGreper_Config(int nNumShotIN,
-		std::shared_ptr<CThreadPool_Simple_Std>& sh_ptrThreadPoolIN)
-		: nNumShot(nNumShotIN),
-		shr_ptrThreadPool(sh_ptrThreadPoolIN)
+	CImageGreper_Config(int nNumShotIN)
+		: nNumShot(nNumShotIN)
 	{}
 };
+
 class CImageGreper
 {
-private:
+protected:
 	CImageGreper_Config m_Config;
 	std::vector<std::shared_ptr<CImage_DataLine> > m_vecObservers;
 	std::string m_strPreviousTime;
 	std::atomic<bool> m_atombThreadRun;
 	cv::Mat m_matImageForOneShot; // this image is used when user request one screen shot
+	int m_nCaptureCounter; // used to calculate the fps
 public:
 	CImageGreper();
-	~CImageGreper();
+	virtual ~CImageGreper();
 
 	bool InitComponent(CImageGreper_Config&& ConfigIN);
 
@@ -44,21 +44,11 @@ public:
 	bool IsThreadRun();
 
 	void AddObserver(std::shared_ptr<CImage_DataLine> shr_ptrObserver);
-	cv::Mat TakeAScreenShot();
-private:
-	void ThreadMain();
 
-	cv::Mat ConvertImage(const UINT& unWidth,
-		const UINT& unHeight,
-		const UINT& unStride,
-		const LPBYTE& pbPixels);
-	HRESULT SavePixelsToFile32bppPBGRA(UINT width,
-		UINT height,
-		UINT stride,
-		LPBYTE pixels,
-		LPWSTR filePath,
-		const GUID &format);
-	HRESULT Direct3D9TakeScreenshots(UINT adapter, UINT count, bool bUpdateObservers = true);
+	virtual cv::Mat TakeAScreenShot() = 0;
+protected:
+	virtual void ThreadMain() = 0;
+
 	void UpdateObserver(cv::Mat matImage, const std::string& strTime);
 };
 

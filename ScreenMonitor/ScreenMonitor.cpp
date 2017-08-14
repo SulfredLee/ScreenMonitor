@@ -35,14 +35,13 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	std::shared_ptr<CThreadPool_Simple_Std> shr_ptrThreadPool(std::make_shared<CThreadPool_Simple_Std>());
 
-	CImageGreper ImageGreper;
-	ImageGreper.InitComponent(CImageGreper_Config(nNumOfPhoto,
-		shr_ptrThreadPool));
+	std::shared_ptr<CImageGreper_DirectX9> ImageGreper(std::make_shared<CImageGreper_DirectX9>());
+	ImageGreper->InitComponent(CImageGreper_Config(nNumOfPhoto));
 	// Select region of interest
 	CROISelector ROISelector;
 	std::vector<cv::Rect> vecROIs;
 	std::vector<int> vecIDs;
-	ROISelector.GetROI(ImageGreper.TakeAScreenShot(), vecROIs, vecIDs);
+	ROISelector.GetROI(ImageGreper->TakeAScreenShot(), vecROIs, vecIDs);
 
 	// Image update checking
 	std::shared_ptr<CImageSelector_TaskMaker> ImageSelector_TaskMaker(std::make_shared<CImageSelector_TaskMaker>());
@@ -56,11 +55,11 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	ImageSaver->InitComponent(CImageSaver_Config(".\\"));
 
 	// Object connection
-	ImageGreper.AddObserver(ImageSelector_TaskMaker);
+	ImageGreper->AddObserver(ImageSelector_TaskMaker);
 	ImageSelector_TaskMaker->AddObserver(ImageSaver);
 
 	// Start application
-	ImageGreper.StartThread();
+	ImageGreper->StartThread();
 
 
 	while (true)
