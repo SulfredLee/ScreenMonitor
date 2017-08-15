@@ -22,6 +22,7 @@ private:
 		LPBYTE pixels,
 		LPWSTR filePath,
 		const GUID &format);
-	HRESULT Direct3D9TakeScreenshots(UINT adapter, UINT count, bool bUpdateObservers = true);
+	HRESULT Direct3D9TakeScreenshots_FrontBuffer(UINT adapter, UINT count, bool bUpdateObservers = true);
+	HRESULT Direct3D9TakeScreenshots_Render(UINT adapter, UINT count, bool bUpdateObservers = true);
 };
 

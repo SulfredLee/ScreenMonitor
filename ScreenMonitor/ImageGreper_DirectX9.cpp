@@ -31,16 +31,14 @@ void CImageGreper_DirectX9::ThreadMain()
 	int nNumShot = 100;
 	while (m_atombThreadRun)
 	{
-		//HRESULT hr = Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, 1);
-		HRESULT hr = Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, nNumShot);
-		//Sleep(m_Config.nDuration);
+		HRESULT hr = Direct3D9TakeScreenshots_FrontBuffer(D3DADAPTER_DEFAULT, nNumShot);
 	}
 }
 
 // override
 cv::Mat CImageGreper_DirectX9::TakeAScreenShot()
 {
-	Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, 1, false);
+	Direct3D9TakeScreenshots_FrontBuffer(D3DADAPTER_DEFAULT, 1, false);
 	return m_matImageForOneShot;
 }
 
@@ -96,7 +94,7 @@ cleanup:
 	return hr;
 }
 
-HRESULT CImageGreper_DirectX9::Direct3D9TakeScreenshots(UINT adapter, UINT count, bool bUpdateObservers)
+HRESULT CImageGreper_DirectX9::Direct3D9TakeScreenshots_FrontBuffer(UINT adapter, UINT count, bool bUpdateObservers)
 {
 	HRESULT hr = S_OK;
 	IDirect3D9 *d3d = nullptr;
@@ -194,6 +192,120 @@ cleanup:
 		delete[] shots;
 	}
 	RELEASE(surface);
+	RELEASE(device);
+	RELEASE(d3d);
+	return hr;
+}
+
+// this method get image from render may be faster than from front buffer
+// but it is not working now, I always get a all black image
+HRESULT CImageGreper_DirectX9::Direct3D9TakeScreenshots_Render(UINT adapter, UINT count, bool bUpdateObservers)
+{
+	HRESULT hr = S_OK;
+	IDirect3D9 *d3d = nullptr;
+	IDirect3DDevice9 *device = nullptr;
+	IDirect3DSurface9* pRenderTarget = nullptr;
+	IDirect3DSurface9* pDestTarget = nullptr;
+	D3DPRESENT_PARAMETERS parameters = { 0 };
+	D3DDISPLAYMODE mode;
+	D3DLOCKED_RECT rc;
+	UINT pitch;
+	SYSTEMTIME st;
+	LPBYTE *shots = nullptr;
+
+	// init D3D and get screen size
+	d3d = Direct3DCreate9(D3D_SDK_VERSION);
+	HRCHECK(d3d->GetAdapterDisplayMode(adapter, &mode));
+
+	parameters.Windowed = TRUE;
+	parameters.BackBufferCount = 1;
+	parameters.BackBufferHeight = mode.Height;
+	parameters.BackBufferWidth = mode.Width;
+	parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	parameters.hDeviceWindow = NULL;
+
+	// create device & capture surface
+	HRCHECK(d3d->CreateDevice(adapter, D3DDEVTYPE_HAL, NULL, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &parameters, &device));
+	HRCHECK(device->GetRenderTarget(0, &pRenderTarget));
+	HRCHECK(device->CreateOffscreenPlainSurface(mode.Width,
+		mode.Height,
+		mode.Format,
+		D3DPOOL_SYSTEMMEM,
+		&pDestTarget,
+		NULL));
+	HRCHECK(device->GetRenderTargetData(pRenderTarget, pDestTarget));
+	
+	// compute the required buffer size
+	HRCHECK(pDestTarget->LockRect(&rc, NULL, 0));
+	pitch = rc.Pitch;
+	HRCHECK(pDestTarget->UnlockRect());
+	
+
+	shots = new LPBYTE[1];
+	// get memory
+	// allocate screenshots buffers
+	shots[0] = new BYTE[pitch * mode.Height];
+
+	for (UINT i = 0; i < count; i++)
+	{
+		// get the data
+		HRCHECK(device->GetRenderTargetData(pRenderTarget, pDestTarget));
+		
+		// copy it into our buffers
+		HRCHECK(pDestTarget->LockRect(&rc, NULL, 0));
+		CopyMemory(shots[0], rc.pBits, rc.Pitch * mode.Height);
+		HRCHECK(pDestTarget->UnlockRect());
+
+		// handle fps measure
+		GetSystemTime(&st); // measure the time we spend doing <count> captures	
+		char temp[1024];
+		memset(temp, 0, 1024);
+		sprintf_s(temp, "%02d%02d%02d", st.wHour, st.wMinute, st.wSecond);
+		if (m_strPreviousTime != temp)
+		{
+			wprintf(L"Greper: %i FPS: %i\n", m_Config.nGreperID, m_nCaptureCounter);
+			m_nCaptureCounter = 0;
+		}
+		m_strPreviousTime = temp;
+		memset(temp, 0, 1024);
+		m_nCaptureCounter++;
+
+		// save to file
+		//WCHAR file[100];
+		//wsprintf(file, L"cap%i.png", i);
+		//HRCHECK(SavePixelsToFile32bppPBGRA(mode.Width, mode.Height, pitch, shots[i], file, GUID_ContainerFormatPng));
+
+		// send to observers
+		sprintf_s(temp, "%04d%02d%02d_%02d%02d%02d_%04d", st.wYear, st.wMonth, st.wDay,
+			st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+		std::string strTimeStamp(temp);
+		memset(temp, 0, 1024);
+		if (bUpdateObservers)
+		{
+			UpdateObserver(ConvertImage(mode.Width, mode.Height, pitch, shots[0]), strTimeStamp);
+		}
+		else
+		{
+			// We have to copy the Mat to internal memory because this Mat is created from an array.
+			// Mat in this case did not has its own memory.
+			// The content will be deleted when the original array is deleted.
+			// So we have to copy the content to m_matImageForOneShot if we want to use it outside from this function
+			ConvertImage(mode.Width, mode.Height, pitch, shots[0]).copyTo(m_matImageForOneShot);
+		}
+	}
+
+cleanup:
+	if (shots != nullptr)
+	{
+		//for (UINT i = 0; i < count; i++)
+		//{
+		//	delete shots[i];
+		//}
+		delete shots[0];
+		delete[] shots;
+	}
+	RELEASE(pRenderTarget);
+	RELEASE(pDestTarget);
 	RELEASE(device);
 	RELEASE(d3d);
 	return hr;
