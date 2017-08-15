@@ -59,7 +59,6 @@ void CImageGreper_Win32MultipleScreen::ThreadMain()
 	{
 		HDC DevC = GetDC(NULL);
 		EnumDisplayMonitors(DevC, NULL, TakeScreenshotsProxy, (LPARAM)this);
-		Sleep(m_Config.nDuration);
 	}
 }
 
@@ -162,7 +161,7 @@ void CImageGreper_Win32MultipleScreen::TakeScreenshots(_In_  HMONITOR hMonitor,
 			sprintf_s(temp, "%02d%02d%02d", st.wHour, st.wMinute, st.wSecond);
 			if (m_strPreviousTime != temp)
 			{
-				wprintf(L"FPS: %i\n", m_nCaptureCounter);
+				wprintf(L"Greper: %i FPS: %i\n", m_Config.nGreperID, m_nCaptureCounter);
 				m_nCaptureCounter = 0;
 			}
 			m_strPreviousTime = temp;

@@ -16,12 +16,6 @@ bool CImageGreper::InitComponent(CImageGreper_Config&& ConfigIN)
 {
 	m_Config = std::move(ConfigIN);
 
-	if (m_Config.nNumShot <= 0)
-		return false;
-
-	m_Config.nNumShot > 128 ? 128 : m_Config.nNumShot;
-	m_Config.nDuration = 1000 / m_Config.nNumShot;
-
 	return true;
 }
 

@@ -19,19 +19,18 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
 	int nRetCode = 0;
 
-	if (argc < 7)
+	if (argc < 5)
 	{
 		nRetCode = 1;
 		std::cout << "Error:\n"
-			<< "Usage: ScreenMonitor.exe -m [Single|Multi]-t Threshold(percentage, mask is 3x3) -n photoPerSec\n";
+			<< "Usage: ScreenMonitor.exe -m [Single|Multi]-t Threshold(percentage, mask is 3x3)\n";
 		return nRetCode;
 	}
 
 	ParsingCMD cmdPar;
-	cmdPar.Set("-t"); cmdPar.Set("-n"); cmdPar.Set("-m");
+	cmdPar.Set("-t"); cmdPar.Set("-m");
 	cmdPar.DoParsing(argc, argv);
 	double dThreshold = std::stod(cmdPar["-t"]); // threshold is percentage
-	int nNumOfPhoto = std::stoi(cmdPar["-n"]);
 	bool bIsSingleMon = cmdPar["-m"] == "Single" ? true : false;
 
 	std::shared_ptr<CThreadPool_Simple_Std> shr_ptrThreadPool(std::make_shared<CThreadPool_Simple_Std>());
@@ -48,7 +47,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	{
 		ImageGreper = std::make_shared<CImageGreper_Win32MultipleScreen>();
 	}
-	ImageGreper->InitComponent(CImageGreper_Config(nNumOfPhoto));
+	ImageGreper->InitComponent(CImageGreper_Config(1));
 	// Select region of interest
 	CROISelector ROISelector;
 	std::vector<cv::Rect> vecROIs;

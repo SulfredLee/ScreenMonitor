@@ -13,14 +13,13 @@
 struct CImageGreper_Config
 {
 	// Get from outside
-	int nNumShot;
+	int nGreperID;
 	// Generate from inside
-	int nDuration;
 
 	CImageGreper_Config()
 	{}
-	CImageGreper_Config(int nNumShotIN)
-		: nNumShot(nNumShotIN)
+	CImageGreper_Config(int nGreperIDIN)
+		: nGreperID(nGreperIDIN)
 	{}
 };
 

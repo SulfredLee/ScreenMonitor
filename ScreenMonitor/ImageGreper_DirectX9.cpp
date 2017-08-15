@@ -26,10 +26,14 @@ CImageGreper_DirectX9::~CImageGreper_DirectX9()
 // override
 void CImageGreper_DirectX9::ThreadMain()
 {
+	// 100 is a random large number, so that m_atombThreadRun can still control the thread
+	// while the screen capture speed can be fast
+	int nNumShot = 100;
 	while (m_atombThreadRun)
 	{
-		HRESULT hr = Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, 1);
-		Sleep(m_Config.nDuration);
+		//HRESULT hr = Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, 1);
+		HRESULT hr = Direct3D9TakeScreenshots(D3DADAPTER_DEFAULT, nNumShot);
+		//Sleep(m_Config.nDuration);
 	}
 }
 
@@ -124,26 +128,12 @@ HRESULT CImageGreper_DirectX9::Direct3D9TakeScreenshots(UINT adapter, UINT count
 	HRCHECK(surface->LockRect(&rc, NULL, 0));
 	pitch = rc.Pitch;
 	HRCHECK(surface->UnlockRect());
-
+	
+	
+	shots = new LPBYTE[1];
+	// get memory
 	// allocate screenshots buffers
-	shots = new LPBYTE[count];
-	for (UINT i = 0; i < count; i++)
-	{
-		shots[i] = new BYTE[pitch * mode.Height];
-	}
-
-	GetSystemTime(&st); // measure the time we spend doing <count> captures	
-	char temp[1024];
-	memset(temp, 0, 1024);
-	sprintf_s(temp, "%02d%02d%02d", st.wHour, st.wMinute, st.wSecond);
-	if (m_strPreviousTime != temp)
-	{
-		wprintf(L"FPS: %i\n", m_nCaptureCounter);
-		m_nCaptureCounter = 0;
-	}
-	m_strPreviousTime = temp;
-	memset(temp, 0, 1024);
-	m_nCaptureCounter++;
+	shots[0] = new BYTE[pitch * mode.Height];
 
 	for (UINT i = 0; i < count; i++)
 	{
@@ -152,25 +142,36 @@ HRESULT CImageGreper_DirectX9::Direct3D9TakeScreenshots(UINT adapter, UINT count
 
 		// copy it into our buffers
 		HRCHECK(surface->LockRect(&rc, NULL, 0));
-		CopyMemory(shots[i], rc.pBits, rc.Pitch * mode.Height);
+		CopyMemory(shots[0], rc.pBits, rc.Pitch * mode.Height);
 		HRCHECK(surface->UnlockRect());
-	}
-	//GetSystemTime(&st);
-	//wprintf(L"%i:%i:%i.%i\n", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 
-	// save all screenshots
-	for (UINT i = 0; i < count; i++)
-	{
+		// handle fps measure
+		GetSystemTime(&st); // measure the time we spend doing <count> captures	
+		char temp[1024];
+		memset(temp, 0, 1024);
+		sprintf_s(temp, "%02d%02d%02d", st.wHour, st.wMinute, st.wSecond);
+		if (m_strPreviousTime != temp)
+		{
+			wprintf(L"Greper: %i FPS: %i\n", m_Config.nGreperID, m_nCaptureCounter);
+			m_nCaptureCounter = 0;
+		}
+		m_strPreviousTime = temp;
+		memset(temp, 0, 1024);
+		m_nCaptureCounter++;
+
+		// save to file
 		//WCHAR file[100];
 		//wsprintf(file, L"cap%i.png", i);
 		//HRCHECK(SavePixelsToFile32bppPBGRA(mode.Width, mode.Height, pitch, shots[i], file, GUID_ContainerFormatPng));
+
+		// send to observers
 		sprintf_s(temp, "%04d%02d%02d_%02d%02d%02d_%04d", st.wYear, st.wMonth, st.wDay,
 			st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 		std::string strTimeStamp(temp);
 		memset(temp, 0, 1024);
 		if (bUpdateObservers)
 		{
-			UpdateObserver(ConvertImage(mode.Width, mode.Height, pitch, shots[i]), strTimeStamp);
+			UpdateObserver(ConvertImage(mode.Width, mode.Height, pitch, shots[0]), strTimeStamp);
 		}
 		else
 		{
@@ -178,17 +179,18 @@ HRESULT CImageGreper_DirectX9::Direct3D9TakeScreenshots(UINT adapter, UINT count
 			// Mat in this case did not has its own memory.
 			// The content will be deleted when the original array is deleted.
 			// So we have to copy the content to m_matImageForOneShot if we want to use it outside from this function
-			ConvertImage(mode.Width, mode.Height, pitch, shots[i]).copyTo(m_matImageForOneShot);
+			ConvertImage(mode.Width, mode.Height, pitch, shots[0]).copyTo(m_matImageForOneShot);
 		}
 	}
 
 cleanup:
 	if (shots != nullptr)
 	{
-		for (UINT i = 0; i < count; i++)
-		{
-			delete shots[i];
-		}
+		//for (UINT i = 0; i < count; i++)
+		//{
+		//	delete shots[i];
+		//}
+		delete shots[0];
 		delete[] shots;
 	}
 	RELEASE(surface);

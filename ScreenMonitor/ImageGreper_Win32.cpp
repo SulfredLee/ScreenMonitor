@@ -17,7 +17,6 @@ void CImageGreper_Win32::ThreadMain()
 	while (m_atombThreadRun)
 	{
 		CaptureAnImage(GetDesktopWindow());
-		Sleep(m_Config.nDuration);
 	}
 }
 
@@ -137,7 +136,7 @@ int CImageGreper_Win32::CaptureAnImage(HWND hWnd, bool bUpdateObservers)
 	sprintf_s(temp, "%02d%02d%02d", st.wHour, st.wMinute, st.wSecond);
 	if (m_strPreviousTime != temp)
 	{
-		wprintf(L"FPS: %i\n", m_nCaptureCounter);
+		wprintf(L"Greper: %i FPS: %i\n", m_Config.nGreperID, m_nCaptureCounter);
 		m_nCaptureCounter = 0;
 	}
 	m_strPreviousTime = temp;
