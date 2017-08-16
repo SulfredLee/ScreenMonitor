@@ -123,7 +123,7 @@ void CImageGreper_Win32MultipleScreen::TakeScreenshots(_In_  HMONITOR hMonitor,
 		BInfoHeader->biWidth = Width;
 
 		RGBTRIPLE *Image = (RGBTRIPLE*)&BmpFileData[sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)];
-		RGBTRIPLE color;
+		//RGBTRIPLE color;
 
 		HDC CaptureDC = CreateCompatibleDC(DevC);
 		HBITMAP CaptureBitmap = CreateCompatibleBitmap(DevC, Width, Height);

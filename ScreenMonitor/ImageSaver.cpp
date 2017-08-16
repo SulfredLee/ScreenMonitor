@@ -32,5 +32,5 @@ std::string CImageSaver::ConvertID(const int& ID)
 		return std::string(1, ID + 'A');
 	char curChar = ID % 26 + 'A';
 	std::string curStr(1, curChar);	
-	return ConvertID((double)ID / 26) + curStr;
+	return ConvertID(static_cast<int>((double)ID / 26)) + curStr;
 }
