@@ -38,7 +38,7 @@ void CROISelector::MouseHandler(int event, int x, int y, int flags)
 	if (event == CV_EVENT_LBUTTONUP && m_drag)
 	{
 		m_rect = cvRect(m_point.x, m_point.y, x - m_point.x, y - m_point.y);
-		cv::rectangle(m_selectedFrame, m_rect, cv::Scalar(255, 255, 255));
+		cv::rectangle(m_selectedFrame, m_rect, cv::Scalar(0, 255, 0));
 		cv::imshow("result", m_selectedFrame);
 		m_selectedFrame.copyTo(m_midFrame);
 		m_drag = 0;
